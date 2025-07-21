@@ -11,6 +11,8 @@ def get_json_from_url(url):
 
 def create_country_bar_chart(df):
 
+
+
     fig = go.Figure(data=[
         go.Bar(
             x=df['country'],
@@ -25,6 +27,8 @@ def create_country_bar_chart(df):
         template="plotly_white"
     )
 
-    fig.update_yaxes(range=[0, 30])
+    y_max = df['count'].max() * 1.1
+
+    fig.update_yaxes(range=[0, y_max])
     
     return fig

@@ -26,15 +26,17 @@ layout = html.Div([
 
     # New div - set up search/filter options
     html.Div([
-        html.Label("Search by Name:"),
-        dcc.Input(id="name-search", type="text", placeholder="Type name...", debounce=True),
-        html.Label("Filter by Country:"),
-        dcc.Dropdown(
-            id="country-dropdown",
-            options=[{"label": c, "value": c} for c in sorted(workshops_df["country"].unique())],
-            multi=True,
-            placeholder="Select country..."
-            ),
+        html.Div([html.Label("Search by Name:"),
+                  dcc.Input(id="name-search", type="text", placeholder="Type name...", debounce=True),]),
+
+
+        html.Div([html.Label("Filter by Country:"),
+                  dcc.Dropdown(
+                        id="country-dropdown",
+                        options=[{"label": c, "value": c} for c in sorted(workshops_df["country"].unique())],
+                        multi=True,
+                        placeholder="Select country..."
+                ),],),
     
         # Download button 
         html.Button("Download Filtered CSV", id="btn-download"),

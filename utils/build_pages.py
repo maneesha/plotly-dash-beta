@@ -1,9 +1,12 @@
 import requests
 import plotly.graph_objects as go
+import os 
 
+def get_json_from_query_number(query_number):
+    redash_api_key = os.getenv(f"REDASH_KEY_QUERY{query_number}")
+    redash_data_url = f"http://redash.carpentries.org/api/queries/{query_number}/results.json?api_key={redash_api_key}"
 
-def get_json_from_url(url):
-    r = requests.get(url)
+    r = requests.get(redash_data_url)
     data = r.json() 
     data = data['query_result']['data']['rows']
     return data 

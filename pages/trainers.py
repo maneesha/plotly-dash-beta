@@ -1,9 +1,8 @@
 import dash
 from dash import html, dash_table, dcc 
-from utils.build_pages import get_json_from_url 
+from utils.build_pages import get_json_from_url, create_country_bar_chart  
 import os 
 import pandas as pd 
-import plotly.graph_objects as go
 
 
 redash_api_key = os.getenv("REDASH_KEY_QUERY523")
@@ -15,22 +14,11 @@ trainers_df = pd.DataFrame(trainers_json)
 
 trainers_country_counts_df = trainers_df['country'].value_counts().reset_index()
 trainers_country_counts_df.columns = ['country', 'count']
+print(trainers_country_counts_df)
 
 # Create bar chart with plotly.graph_objects
-fig = go.Figure(data=[
-    go.Bar(
-        x=trainers_country_counts_df['country'],
-        y=trainers_country_counts_df['count'],
-        marker_color='steelblue'
-    )
-])
-fig.update_layout(
-    title="Count CLDT by Country",
-    xaxis_title="Country",
-    yaxis_title="Count",
-    template="plotly_white"
-)
 
+chart = create_country_bar_chart(trainers_country_counts_df)
 
 
 dash.register_page(__name__)
@@ -45,7 +33,7 @@ layout = html.Div([
         data=trainers_json,  # Pass the list of dictionaries as data
     ),
     # Display bar plot
-    dcc.Graph(figure=fig)
+    dcc.Graph(figure=chart)
 
 
 ]) # close outer html.Div 

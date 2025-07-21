@@ -3,28 +3,32 @@ from dash import html, dash_table, dcc
 from utils.build_pages import get_json_from_query_number, create_country_bar_chart 
 import pandas as pd 
 
+# Initialize page 
+dash.register_page(__name__, title="Workshops")
 
+# Load in workshops data as json and df 
 workshops_json = get_json_from_query_number(782)
 workshops_df = pd.DataFrame(workshops_json)
 
+# Create country counts df 
 workshops_country_counts_df = workshops_df['country'].value_counts().reset_index()
-workshops_country_counts_df.columns = ['country', 'count']
 
+# Create country counts bar chart 
 chart = create_country_bar_chart(workshops_country_counts_df)
 
-dash.register_page(__name__)
-
+# Set up page layout
 layout = html.Div([
+    # Page heading 
     html.H1('These are our Workshops.'),
+    # Page intro text 
     html.Div("Something about Workshops. This is a list of DC, LC, SWC workshops."),
     html.Br(),
-    html.Div(id='analytics-output'),
-        # Display table
+    # Display table
     dash_table.DataTable(
-        data=workshops_json,  # Pass the list of dictionaries as data
+        data=workshops_json, 
     ),
-
     # Display bar plot
+    html.H2('Plot workshops by country'),
     dcc.Graph(figure=chart)
 
 ]) # close outer html.Div 

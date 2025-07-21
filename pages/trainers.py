@@ -14,7 +14,6 @@ trainers_df = pd.DataFrame(trainers_json)
 
 trainers_country_counts_df = trainers_df['country'].value_counts().reset_index()
 trainers_country_counts_df.columns = ['country', 'count']
-print(trainers_country_counts_df)
 
 # Create bar chart with plotly.graph_objects
 

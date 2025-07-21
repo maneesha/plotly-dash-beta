@@ -1,5 +1,5 @@
 import dash
-from dash import html, dash_table, dcc 
+from dash import html, dash_table, dcc, Input, Output 
 from utils.build_pages import get_json_from_query_number, create_country_bar_chart 
 import pandas as pd 
 
@@ -24,18 +24,28 @@ layout = html.Div([
     html.Div("Something about Workshops. This is a list of DC, LC, SWC workshops."),
     html.Br(),
 
-    # Add UI to filter by country
-    html.Label("Filter by Country:"),
-    dcc.Dropdown(
-        id="country-dropdown",
-        options=[{"label": c, "value": c} for c in sorted(workshops_df["country"].unique())],
-        multi=True,
-        placeholder="Select country..."
-    ),
+    # New div - set up search/filter options
+    html.Div([
+        html.Label("Search by Name:"),
+        dcc.Input(id="name-search", type="text", placeholder="Type name...", debounce=True),
+        html.Label("Filter by Country:"),
+        dcc.Dropdown(
+            id="country-dropdown",
+            options=[{"label": c, "value": c} for c in sorted(workshops_df["country"].unique())],
+            multi=True,
+            placeholder="Select country..."
+            ),
+    
+        # Download button 
+        html.Button("Download Filtered CSV", id="btn-download"),
+        dcc.Download(id="download-table")
+
+        ], style={"marginBottom": 20, "maxWidth": "400px"}),
 
 
     # Display table
     dash_table.DataTable(
+        id="table",
         data=workshops_json, 
         # Add sort feature to table
         sort_action='native',
@@ -47,3 +57,20 @@ layout = html.Div([
     dcc.Graph(figure=chart)
 
 ]) # close outer html.Div 
+
+
+@dash.callback(
+    Output("table", "data"),
+    Input("name-search", "value"),
+    Input("country-dropdown", "value")
+)
+def update_table(name_search, country_filter):
+    filtered = workshops_df.copy()
+
+    if name_search:
+        filtered = filtered[filtered["instructors"].str.contains(name_search, case=False, na=False)]
+
+    if country_filter:
+        filtered = filtered[filtered["country"].isin(country_filter)]
+
+    return filtered.to_dict("records")

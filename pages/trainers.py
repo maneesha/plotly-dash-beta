@@ -25,7 +25,11 @@ layout = html.Div([
     html.Br(),
     # Display table
     dash_table.DataTable(
-        data=trainers_json,  
+        data=trainers_json, 
+        # Add sort feature to table
+        sort_action='native',
+        # Set number of rows to display
+        page_size=20,
     ),
     # Display bar plot
     html.H2('Plot Trainers by country'),

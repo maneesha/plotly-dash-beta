@@ -26,6 +26,10 @@ layout = html.Div([
     # Display table
     dash_table.DataTable(
         data=workshops_json, 
+        # Add sort feature to table
+        sort_action='native',
+        # Set number of rows to display
+        page_size=20,
     ),
     # Display bar plot
     html.H2('Plot workshops by country'),

@@ -23,6 +23,17 @@ layout = html.Div([
     # Page intro text 
     html.Div("Something about Workshops. This is a list of DC, LC, SWC workshops."),
     html.Br(),
+
+    # Add UI to filter by country
+    html.Label("Filter by Country:"),
+    dcc.Dropdown(
+        id="country-dropdown",
+        options=[{"label": c, "value": c} for c in sorted(workshops_df["country"].unique())],
+        multi=True,
+        placeholder="Select country..."
+    ),
+
+
     # Display table
     dash_table.DataTable(
         data=workshops_json, 

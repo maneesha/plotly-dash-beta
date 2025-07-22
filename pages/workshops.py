@@ -1,5 +1,5 @@
 import dash
-from dash import html, dash_table, dcc, Input, Output 
+from dash import html, dash_table, dcc, Input, Output, State 
 from utils.build_pages import get_json_from_query_number, create_country_bar_chart 
 import pandas as pd 
 
@@ -26,10 +26,11 @@ layout = html.Div([
 
     # New div - set up search/filter options
     html.Div([
+        # Inner div for search 
         html.Div([html.Label("Search by Name:"),
                   dcc.Input(id="name-search", type="text", placeholder="Type name...", debounce=True),]),
 
-
+        # Inner div for country filter 
         html.Div([html.Label("Filter by Country:"),
                   dcc.Dropdown(
                         id="country-dropdown",
@@ -54,7 +55,8 @@ layout = html.Div([
         # Set number of rows to display
         page_size=20,
     ),
-    # Display bar plot
+
+    # Display bar plot for country counts 
     html.H2('Plot workshops by country'),
     dcc.Graph(figure=chart)
 
@@ -76,3 +78,14 @@ def update_table(name_search, country_filter):
         filtered = filtered[filtered["country"].isin(country_filter)]
 
     return filtered.to_dict("records")
+
+
+@dash.callback(
+    Output("download-table", "data"),
+    Input("btn-download", "n_clicks"),
+    State("table", "data"),
+    prevent_initial_call=True
+)
+def download_filtered_table(n_clicks, table_data):
+    filtered_df = pd.DataFrame(table_data)
+    return dcc.send_data_frame(filtered_df.to_csv, filename="carpentries_workshop_data.csv")

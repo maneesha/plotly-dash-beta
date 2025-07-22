@@ -1,7 +1,7 @@
 import dash
 from dash import html, dash_table, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart 
-import pandas as pd 
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart, get_country_name 
+import pandas as pd
 
 # Initialize page 
 dash.register_page(__name__, title="Workshops")
@@ -12,6 +12,7 @@ workshops_df = pd.DataFrame(workshops_json)
 
 # Create country counts df 
 workshops_country_counts_df = workshops_df['country'].value_counts().reset_index()
+workshops_country_counts_df['country_full_name'] = workshops_country_counts_df['country'].apply(get_country_name)
 
 # Create country counts bar chart 
 chart = create_country_bar_chart(workshops_country_counts_df)

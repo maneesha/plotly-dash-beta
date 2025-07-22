@@ -1,7 +1,9 @@
 import dash
 from dash import html, dash_table, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart, get_country_name 
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart, get_country_name, get_country_alpha3 
 import pandas as pd
+import plotly.graph_objects as go
+
 
 # Initialize page 
 dash.register_page(__name__, title="Workshops")
@@ -13,9 +15,22 @@ workshops_df = pd.DataFrame(workshops_json)
 # Create country counts df 
 workshops_country_counts_df = workshops_df['country'].value_counts().reset_index()
 workshops_country_counts_df['country_full_name'] = workshops_country_counts_df['country'].apply(get_country_name)
+workshops_country_counts_df['country_alpha3'] = workshops_country_counts_df['country'].apply(get_country_alpha3)
 
 # Create country counts bar chart 
 chart = create_country_bar_chart(workshops_country_counts_df)
+
+# Create country counts map
+countries_map = go.Figure(data=go.Choropleth(
+    locations = workshops_country_counts_df['country_alpha3'],
+    z = workshops_country_counts_df['count'],
+    text = workshops_country_counts_df['country_full_name'],
+    colorscale = 'Blues',
+    autocolorscale=False,
+    marker_line_color='darkgray',
+    marker_line_width=0.5,
+    colorbar_title = 'Workshop count',
+))
 
 # Set up page layout
 layout = html.Div([
@@ -68,7 +83,11 @@ layout = html.Div([
 
     # Display bar plot for country counts 
     html.H2('Plot workshops by country'),
-    dcc.Graph(figure=chart)
+    dcc.Graph(figure=chart),
+
+    # Display map for country counts 
+    html.H2('Map workshops by country'),
+    dcc.Graph(figure=countries_map),
 
 ]) # close outer html.Div 
 

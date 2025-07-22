@@ -3,7 +3,7 @@ from dash import html, dash_table, dcc, Input, Output, State
 from utils.build_pages import get_json_from_query_number, create_country_bar_chart, get_country_name, get_country_alpha3 
 import pandas as pd
 import plotly.graph_objects as go
-
+import numpy as np
 
 # Initialize page 
 dash.register_page(__name__, title="Workshops")
@@ -20,17 +20,105 @@ workshops_country_counts_df['country_alpha3'] = workshops_country_counts_df['cou
 # Create country counts bar chart 
 chart = create_country_bar_chart(workshops_country_counts_df)
 
+# Create log scale data frame for country counts 
+workshops_country_counts_log_df = workshops_country_counts_df.copy()
+workshops_country_counts_log_df['log_val'] = np.log10(workshops_country_counts_log_df['count']) 
+workshops_country_counts_log_df['hover_text'] = workshops_country_counts_log_df['country_full_name'] + '<br>Value: ' + workshops_country_counts_log_df['count'].astype(str)
+
+
+
+
+
+
+
+
+
+
+chart_log = go.Figure(data=[
+    go.Bar(
+        x=workshops_country_counts_log_df['country'],
+        y=workshops_country_counts_log_df['log_val'],
+        marker_color='steelblue',
+        text=workshops_country_counts_log_df['count'],
+        hovertemplate='<b>%{x}</b><br>Value: %{text}<extra></extra>'
+    )
+    ])
+
+tick_vals = [100, 200, 500, 1000, 2000]
+tick_text = [str(v) for v in tick_vals]
+chart_log.update_layout(
+    yaxis=dict(
+        type='log',
+        title='Value',
+        tickvals=tick_vals,
+        ticktext=tick_text
+    ),
+)
+
+# chart_log.update_layout(
+#     title="Count by Country",
+#     xaxis_title="Country",
+#     yaxis_title="Count",
+#     template="plotly_white"
+#     )
+
+# y_max = workshops_country_counts_log_df['count'].max() * 1.1
+
+# chart_log.update_yaxes(range=[0, y_max])
+
+
+
+
+
+
+
+
+
+
+
+
 # Create country counts map
+
+## LINEAR SCALE MAP
 countries_map = go.Figure(data=go.Choropleth(
     locations = workshops_country_counts_df['country_alpha3'],
     z = workshops_country_counts_df['count'],
     text = workshops_country_counts_df['country_full_name'],
     colorscale = 'Blues',
-    autocolorscale=False,
+    colorbar = dict(
+        title = 'Value',
+        tickvals = [np.log10(v) for v in [25, 50, 100, 300, 1000, 2000]],
+        ticktext = ['25', '50', '100', '300', '1000', '2000']),
+    autocolorscale=False, # Do not automatically apply colorscale
     marker_line_color='darkgray',
     marker_line_width=0.5,
     colorbar_title = 'Workshop count',
+    # text = workshops_country_counts_df['hover_text'], # custom hover text
+    hovertemplate = '%{text}<extra></extra>',
 ))
+countries_map.update_geos(projection_type='natural earth',)
+## END LINEAR SCALE MAP 
+
+
+## LOG SCALE MAP 
+countries_map_log = go.Figure(data=go.Choropleth(
+    locations = workshops_country_counts_log_df['country_alpha3'],
+    z = workshops_country_counts_log_df['log_val'],
+    # text = df_log['country_full_name'],
+    colorscale = 'Blues',
+    colorbar = dict(
+        title = 'Value',
+        tickvals = [np.log10(v) for v in [25, 50, 100, 300, 1000, 2000]],
+        ticktext = ['25', '50', '100', '300', '1000', '2000']),
+    autocolorscale=False, # Do not automatically apply colorscale
+    marker_line_color='darkgray',
+    marker_line_width=0.5,
+    colorbar_title = 'Workshop count',
+    text = workshops_country_counts_log_df['hover_text'], # custom hover text
+    hovertemplate = '%{text}<extra></extra>',
+))
+countries_map_log.update_geos(projection_type='natural earth',)
+## END LOG SCALE MAP 
 
 # Set up page layout
 layout = html.Div([
@@ -82,12 +170,18 @@ layout = html.Div([
     ),
 
     # Display bar plot for country counts 
-    html.H2('Plot workshops by country'),
+    html.H2('Plot workshops by country - Linear Scale'),
     dcc.Graph(figure=chart),
+    # Display bar plot for country counts 
+    html.H2('Plot workshops by country - Log Scale'),
+    dcc.Graph(figure=chart_log),
 
     # Display map for country counts 
-    html.H2('Map workshops by country'),
-    dcc.Graph(figure=countries_map),
+    html.H2('Map workshops by country - Linear Scale'),
+    dcc.Graph(figure=countries_map,  style={'height': '700px', 'width': '100%'} ),
+
+    html.H2('Map workshops by country - Log Scale'),
+    dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width': '100%'} ),
 
 ]) # close outer html.Div 
 

@@ -44,3 +44,10 @@ def get_country_name(code):
         return pycountry.countries.get(alpha_2=code).name
     except:
         return "Country unknown"
+
+# Function to get full country name
+def get_country_alpha3(code):
+    try:
+        return pycountry.countries.get(alpha_2=code).alpha_3
+    except:
+        return "Country unknown"

@@ -1,6 +1,7 @@
 import requests
 import plotly.graph_objects as go
 import os 
+import pycountry 
 
 def get_json_from_query_number(query_number):
     redash_api_key = os.getenv(f"REDASH_KEY_QUERY{query_number}")
@@ -35,3 +36,11 @@ def create_country_bar_chart(df):
     fig.update_yaxes(range=[0, y_max])
     
     return fig
+
+
+# Function to get full country name
+def get_country_name(code):
+    try:
+        return pycountry.countries.get(alpha_2=code).name
+    except:
+        return "Country unknown"

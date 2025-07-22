@@ -48,12 +48,21 @@ layout = html.Div([
 
     # Display table
     dash_table.DataTable(
-        id="table",
+        id="all-workshops-table",
         data=workshops_json, 
         # Add sort feature to table
         sort_action='native',
         # Set number of rows to display
         page_size=20,
+    ),
+
+    # Display table for country counts
+    html.H2('Count Workshops by Country'),
+    dash_table.DataTable(
+        id="country-count-table",
+        data=workshops_country_counts_df.to_dict("records"),
+        sort_action='native',
+        page_size=10,
     ),
 
     # Display bar plot for country counts 
@@ -64,7 +73,7 @@ layout = html.Div([
 
 
 @dash.callback(
-    Output("table", "data"),
+    Output("all-workshops-table", "data"),
     Input("name-search", "value"),
     Input("country-dropdown", "value")
 )

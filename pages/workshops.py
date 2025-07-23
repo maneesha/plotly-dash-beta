@@ -1,6 +1,6 @@
 import dash
 from dash import html, dash_table, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart, get_country_name, get_country_alpha3 
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart, get_country_counts_df, add_log_scale, add_hover_text 
 import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
@@ -13,33 +13,21 @@ workshops_json = get_json_from_query_number(782)
 workshops_df = pd.DataFrame(workshops_json)
 
 # Create country counts df 
-workshops_country_counts_df = workshops_df['country'].value_counts().reset_index()
-workshops_country_counts_df['country_full_name'] = workshops_country_counts_df['country'].apply(get_country_name)
-workshops_country_counts_df['country_alpha3'] = workshops_country_counts_df['country'].apply(get_country_alpha3)
+# Include columns for log scale and hover text
+workshops_country_counts_df = get_country_counts_df(workshops_df)
+workshops_country_counts_df = add_log_scale(workshops_country_counts_df)
+workshops_country_counts_df = add_hover_text(workshops_country_counts_df)
 
 # Create country counts bar chart 
 chart = create_country_bar_chart(workshops_country_counts_df)
 
-# Create log scale data frame for country counts 
-workshops_country_counts_log_df = workshops_country_counts_df.copy()
-workshops_country_counts_log_df['log_val'] = np.log10(workshops_country_counts_log_df['count']) 
-workshops_country_counts_log_df['hover_text'] = workshops_country_counts_log_df['country_full_name'] + '<br>Value: ' + workshops_country_counts_log_df['count'].astype(str)
-
-
-
-
-
-
-
-
-
 
 chart_log = go.Figure(data=[
     go.Bar(
-        x=workshops_country_counts_log_df['country'],
-        y=workshops_country_counts_log_df['log_val'],
+        x=workshops_country_counts_df['country'],
+        y=workshops_country_counts_df['log_count'],
         marker_color='steelblue',
-        text=workshops_country_counts_log_df['count'],
+        text=workshops_country_counts_df['count'],
         hovertemplate='<b>%{x}</b><br>Value: %{text}<extra></extra>'
     )
     ])
@@ -83,7 +71,6 @@ chart_log.update_layout(
 countries_map = go.Figure(data=go.Choropleth(
     locations = workshops_country_counts_df['country_alpha3'],
     z = workshops_country_counts_df['count'],
-    text = workshops_country_counts_df['country_full_name'],
     colorscale = 'Blues',
     colorbar = dict(
         title = 'Value',
@@ -93,7 +80,7 @@ countries_map = go.Figure(data=go.Choropleth(
     marker_line_color='darkgray',
     marker_line_width=0.5,
     colorbar_title = 'Workshop count',
-    # text = workshops_country_counts_df['hover_text'], # custom hover text
+    text = workshops_country_counts_df['hover_text'], # custom hover text
     hovertemplate = '%{text}<extra></extra>',
 ))
 countries_map.update_geos(projection_type='natural earth',)
@@ -102,8 +89,8 @@ countries_map.update_geos(projection_type='natural earth',)
 
 ## LOG SCALE MAP 
 countries_map_log = go.Figure(data=go.Choropleth(
-    locations = workshops_country_counts_log_df['country_alpha3'],
-    z = workshops_country_counts_log_df['log_val'],
+    locations = workshops_country_counts_df['country_alpha3'],
+    z = workshops_country_counts_df['log_count'],
     # text = df_log['country_full_name'],
     colorscale = 'Blues',
     colorbar = dict(
@@ -114,7 +101,7 @@ countries_map_log = go.Figure(data=go.Choropleth(
     marker_line_color='darkgray',
     marker_line_width=0.5,
     colorbar_title = 'Workshop count',
-    text = workshops_country_counts_log_df['hover_text'], # custom hover text
+    text = workshops_country_counts_df['hover_text'], # custom hover text
     hovertemplate = '%{text}<extra></extra>',
 ))
 countries_map_log.update_geos(projection_type='natural earth',)

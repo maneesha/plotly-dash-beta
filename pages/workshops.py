@@ -43,27 +43,6 @@ chart_log.update_layout(
     ),
 )
 
-# chart_log.update_layout(
-#     title="Count by Country",
-#     xaxis_title="Country",
-#     yaxis_title="Count",
-#     template="plotly_white"
-#     )
-
-# y_max = workshops_country_counts_log_df['count'].max() * 1.1
-
-# chart_log.update_yaxes(range=[0, y_max])
-
-
-
-
-
-
-
-
-
-
-
 
 # Create country counts map
 

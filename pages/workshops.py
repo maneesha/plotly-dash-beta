@@ -53,8 +53,8 @@ countries_map = go.Figure(data=go.Choropleth(
     colorscale = 'Blues',
     colorbar = dict(
         title = 'Value',
-        tickvals = [np.log10(v) for v in [25, 50, 100, 300, 1000, 2000]],
-        ticktext = ['25', '50', '100', '300', '1000', '2000']),
+        tickvals = [100, 500, 1000, 1500, 2000],
+        ticktext = [100, 500, 1000, 1500, 2000],),
     autocolorscale=False, # Do not automatically apply colorscale
     marker_line_color='darkgray',
     marker_line_width=0.5,

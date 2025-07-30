@@ -14,26 +14,41 @@ def get_json_from_query_number(query_number):
     return data 
 
 
-def create_country_bar_chart(df):
-    fig = go.Figure(data=[
-        go.Bar(
-            x=df['country'],
-            y=df['count'],
-            marker_color='steelblue'
-        )
-    ])
+def create_country_bar_chart(df, scale_type):
+    """
+    Create bar chart from dataframe containing country counts.
+    Allows for different scale types (linear or log).
+    """
+
+    # Intialize figure 
+    fig = go.Figure()
+
+    # Add bar chart trace
+    fig.add_trace(go.Bar(x=df['country'],
+                         y=df['count'],
+                         text=df['count'],
+                         customdata=df[['country_full_name']],
+                         hovertemplate="<b>%{customdata[0]}</b>: %{text}<extra></extra>"))
+
+    # Set y-ticks based on scale type 
+    if scale_type == 'linear':
+        tick_vals =[0, 250, 500, 750, 1000, 1250, 1500, 1750, 2000]
+    elif scale_type == 'log':
+        tick_vals = [1, 10, 50, 100, 500, 1000, 2000, 5000]
+
+
+    # Update yticks.  Auto or array to use above defined lists
     fig.update_layout(
-        title="Count by Country",
-        xaxis_title="Country",
-        yaxis_title="Count",
-        template="plotly_white"
-    )
+        yaxis=dict(
+            type=scale_type,  # Set y-axis to log or linear scale
+            # tickmode='auto',  # Use 'array' for custom tick values
+            tickvals= tick_vals,  # Specify tick values
+            # ticktext=[]  List of equivalent length 
+        ),
+        title=f'Count by Country ({scale_type} scale)',)
 
-    y_max = df['count'].max() * 1.1
+    return fig 
 
-    fig.update_yaxes(range=[0, y_max])
-
-    return fig
 
 
 # Function to get full country name from alpha-2 code
@@ -57,10 +72,6 @@ def get_country_counts_df(df):
     country_counts_df['country_alpha3'] = country_counts_df['country'].apply(get_country_alpha3)
     return country_counts_df
 
-# Function to add log scale to a dataframe
-def add_log_scale(df):
-    df['log_count'] = np.log10(df['count'])
-    return df
 
 # Function to add hover text to a dataframe
 def add_hover_text(df):

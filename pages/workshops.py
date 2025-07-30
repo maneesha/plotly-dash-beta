@@ -1,6 +1,6 @@
 import dash
 from dash import html, dash_table, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart, get_country_counts_df, add_log_scale, add_hover_text 
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text
 import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
@@ -15,33 +15,11 @@ workshops_df = pd.DataFrame(workshops_json)
 # Create country counts df 
 # Include columns for log scale and hover text
 workshops_country_counts_df = get_country_counts_df(workshops_df)
-workshops_country_counts_df = add_log_scale(workshops_country_counts_df)
 workshops_country_counts_df = add_hover_text(workshops_country_counts_df)
 
-# Create country counts bar chart 
-chart = create_country_bar_chart(workshops_country_counts_df)
-
-
-chart_log = go.Figure(data=[
-    go.Bar(
-        x=workshops_country_counts_df['country'],
-        y=workshops_country_counts_df['log_count'],
-        marker_color='steelblue',
-        text=workshops_country_counts_df['count'],
-        hovertemplate='<b>%{x}</b><br>Value: %{text}<extra></extra>'
-    )
-    ])
-
-tick_vals = [100, 200, 500, 1000, 2000]
-tick_text = [str(v) for v in tick_vals]
-chart_log.update_layout(
-    yaxis=dict(
-        type='log',
-        title='Value',
-        tickvals=tick_vals,
-        ticktext=tick_text
-    ),
-)
+# Create country counts bar charts - linear and log scale 
+chart_linear = create_country_bar_chart(workshops_country   _counts_df, 'linear')
+chart_log = create_country_bar_chart(workshops_country_counts_df, 'log')
 
 
 # Create country counts map
@@ -137,7 +115,7 @@ layout = html.Div([
 
     # Display bar plot for country counts 
     html.H2('Plot workshops by country - Linear Scale'),
-    dcc.Graph(figure=chart),
+    dcc.Graph(figure=chart_linear),
     # Display bar plot for country counts 
     html.H2('Plot workshops by country - Log Scale'),
     dcc.Graph(figure=chart_log),

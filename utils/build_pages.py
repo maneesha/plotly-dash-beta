@@ -128,20 +128,20 @@ def create_main_table(df, id, page_size=20):
         style_table={'overflowX':'scroll'}
     )
 
-def set_up_search_filter(df):
+def set_up_search_filter(df, column_name_df, column_name_human):
 
     search_filter = html.Div([
-        # Inner div for search 
-        html.Div([html.Label("Search by Name:"),
-                  dcc.Input(id="name-search", type="text", placeholder="Type name...", debounce=True),]),
+        # # Inner div for search 
+        # html.Div([html.Label("Search by Name:"),
+        #           dcc.Input(id="name-search", type="text", placeholder="Type name...", debounce=True),]),
 
         # Inner div for country filter 
-        html.Div([html.Label("Filter by Country:"),
+        html.Div([html.Label(f"Filter by {column_name_human}:"),
                   dcc.Dropdown(
-                        id="country-dropdown",
-                        options=[{"label": c, "value": c} for c in sorted(df["country"].unique())],
+                        id=f"{column_name_df}-dropdown",
+                        options=[{"label": c, "value": c} for c in sorted(df[f"{column_name_df}"].unique())],
                         multi=True,
-                        placeholder="Select country..."
+                        placeholder=f"Select {column_name_human}..."
                 ),],),
 
         # Download button 

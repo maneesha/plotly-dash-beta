@@ -1,6 +1,6 @@
 import dash
 from dash import html, dash_table, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter 
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table 
 import pandas as pd
 
 # Initialize page 
@@ -35,16 +35,7 @@ search_filter_options =  set_up_search_filter(workshops_df)
 full_table = create_main_table(workshops_df, "workshops-table", 20)
 
 country_count_header = html.H2('Count Workshops by Country')
-country_count_table =  dash_table.DataTable(
-        id="country-count-table",
-        data=workshops_country_counts_df.to_dict("records"),
-        columns=[
-            {'name':"country_full_name", 'id':"country_full_name"}, {'name':"count", 'id':"count"}
-            ],
-        sort_action='native',
-        page_size=10,
-        fill_width=False
-    )
+country_count_table =  create_country_counts_table(workshops_country_counts_df, 15)
 
 
 linear_plot_header = html.H2('Plot workshops by country - Linear Scale')

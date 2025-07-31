@@ -19,7 +19,7 @@ workshops_country_counts_df = add_hover_text(workshops_country_counts_df)
 chart_linear = create_country_bar_chart(workshops_country_counts_df, 'linear')
 chart_log = create_country_bar_chart(workshops_country_counts_df, 'log')
 
-print(workshops_country_counts_df)
+print(workshops_country_counts_df.dtypes)
 
 # Create country counts map
 countries_map_linear = create_country_counts_map(workshops_country_counts_df, scale_type='linear')
@@ -71,8 +71,12 @@ layout = html.Div([
     dash_table.DataTable(
         id="country-count-table",
         data=workshops_country_counts_df.to_dict("records"),
+        columns=[
+            {'name':"country_full_name", 'id':"country_full_name"}, {'name':"count", 'id':"count"}
+            ],
         sort_action='native',
         page_size=10,
+        fill_width=False
     ),
 
     # Display bar plot for country counts 

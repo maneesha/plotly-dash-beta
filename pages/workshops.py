@@ -9,9 +9,11 @@ dash.register_page(__name__, title="Workshops")
 # Load in workshops data as json and df 
 workshops_json = get_json_from_query_number(782)
 workshops_df = pd.DataFrame(workshops_json)
+columns = ['host_organization', 'slug', 'start_date', 'end_date', 'venue', 'country',  'url', 'instructors', 'helpers',  'hosts',  'latitude',  'longitude',]
+workshops_df = workshops_df[columns]
 
 # Create country counts df 
-# Include columns for log scale and hover text
+# Include column for hover text
 workshops_country_counts_df = get_country_counts_df(workshops_df)
 workshops_country_counts_df = add_hover_text(workshops_country_counts_df)
 
@@ -55,11 +57,10 @@ layout = html.Div([
 
         ], style={"marginBottom": 20, "maxWidth": "400px"}),
 
-
     # Display table
     dash_table.DataTable(
         id="all-workshops-table",
-        data=workshops_json, 
+        data=workshops_df.to_dict("records"),
         # Add sort feature to table
         sort_action='native',
         # Set number of rows to display

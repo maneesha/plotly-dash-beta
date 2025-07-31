@@ -3,6 +3,9 @@ import plotly.graph_objects as go
 import os
 import pycountry
 import numpy as np
+import dash 
+from dash import html, dash_table, dcc, Input, Output, State 
+
 
 
 def get_json_from_query_number(query_number):
@@ -110,3 +113,17 @@ def create_country_counts_map(df, scale_type='linear'):
     fig.update_geos(projection_type='natural earth', landcolor="LightGray",)
 
     return fig
+
+
+def create_main_table(df, id, page_size=20):
+
+    return dash_table.DataTable(
+        id=id,
+        data=df.to_dict("records"),
+        # Add sort feature to table
+        sort_action='native',
+        # Set number of rows to display
+        page_size=page_size,
+        style_cell={'textAlign': 'left'},
+        style_table={'overflowX':'scroll'}
+    )

@@ -30,7 +30,7 @@ countries_map_log = create_country_counts_map(workshops_country_counts_df, scale
 # Set up building blocks for page layout 
 header = html.H1('These are our WONDERFUL Workshops.')
 intro_text = html.Div("Something about Workshops. This is a list of DC, LC, SWC workshops.")
-search_filter_options =  set_up_search_filter(workshops_df) 
+search_filter_options =  set_up_search_filter(workshops_df, 'country', 'Country') 
 
 full_table = create_main_table(workshops_df, "workshops-table", 20)
 
@@ -82,14 +82,10 @@ layout = html.Div([
 
 @dash.callback(
     Output("workshops-table", "data"),
-    Input("name-search", "value"),
     Input("country-dropdown", "value")
 )
-def update_table(name_search, country_filter):
+def update_table(country_filter):
     filtered = workshops_df.copy()
-
-    if name_search:
-        filtered = filtered[filtered["instructors"].str.contains(name_search, case=False, na=False)]
 
     if country_filter:
         filtered = filtered[filtered["country"].isin(country_filter)]

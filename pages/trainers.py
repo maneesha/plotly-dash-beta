@@ -17,6 +17,8 @@ trainers_country_counts_df = get_country_counts_df(trainers_df)
 trainers_country_counts_df = add_hover_text(trainers_country_counts_df)
 
 full_table = create_main_table(trainers_df, "trainers-table", 20)
+search_filter_options =  set_up_search_filter(trainers_df, 'active_status', 'Active Status') 
+
 
 country_count_header = html.H2('Count Trainers by Country')
 country_count_table =  create_country_counts_table(trainers_country_counts_df, 15)
@@ -29,4 +31,16 @@ log_map_header = html.H2('Map workshops by country - Log Scale')
 log_map = dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width': '100%'} )
 
 # Set up page layout
-layout = html.Div(["hello world", full_table, country_count_table, log_map ])
+layout = html.Div(["hello world", search_filter_options, full_table, country_count_table, log_map ])
+
+@dash.callback(
+    Output("trainers-table", "data"),
+    Input("active_status-dropdown", "value")
+)
+def update_table(active_filter):
+    filtered = trainers_df.copy()
+
+    if active_filter:
+        filtered = filtered[filtered["active_status"].isin(active_filter)]
+
+    return filtered.to_dict("records")

@@ -151,3 +151,18 @@ def set_up_search_filter(df):
         ], style={"marginBottom": 20, "maxWidth": "400px"})
     
     return search_filter
+
+
+def create_country_counts_table(df, page_size):
+    table = dash_table.DataTable(
+        id="country-count-table",
+        data=df.to_dict("records"),
+        columns=[
+            {'name':"country_full_name", 'id':"country_full_name"}, {'name':"count", 'id':"count"}
+            ],
+        sort_action='native',
+        page_size=page_size,
+        fill_width=False
+    )
+
+    return table

@@ -1,6 +1,6 @@
 import dash
 from dash import html, dash_table, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter 
 import pandas as pd
 
 # Initialize page 
@@ -30,25 +30,7 @@ countries_map_log = create_country_counts_map(workshops_country_counts_df, scale
 # Set up building blocks for page layout 
 header = html.H1('These are our WONDERFUL Workshops.')
 intro_text = html.Div("Something about Workshops. This is a list of DC, LC, SWC workshops.")
-search_filter_options =  html.Div([
-        # Inner div for search 
-        html.Div([html.Label("Search by Name:"),
-                  dcc.Input(id="name-search", type="text", placeholder="Type name...", debounce=True),]),
-
-        # Inner div for country filter 
-        html.Div([html.Label("Filter by Country:"),
-                  dcc.Dropdown(
-                        id="country-dropdown",
-                        options=[{"label": c, "value": c} for c in sorted(workshops_df["country"].unique())],
-                        multi=True,
-                        placeholder="Select country..."
-                ),],),
-
-        # Download button 
-        html.Button("Download the the Filtered CSV", id="btn-download"),
-        dcc.Download(id="download-table")
-
-        ], style={"marginBottom": 20, "maxWidth": "400px"})
+search_filter_options =  set_up_search_filter(workshops_df) 
 
 full_table = create_main_table(workshops_df, "workshops-table", 20)
 

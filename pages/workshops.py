@@ -51,7 +51,7 @@ search_filter_options =  html.Div([
         ], style={"marginBottom": 20, "maxWidth": "400px"})
 
 full_table = dash_table.DataTable(
-        id="all-workshops-table",
+        id="workshops-table",
         data=workshops_df.to_dict("records"),
         # Add sort feature to table
         sort_action='native',
@@ -111,7 +111,7 @@ layout = html.Div([
 
 
 @dash.callback(
-    Output("all-workshops-table", "data"),
+    Output("workshops-table", "data"),
     Input("name-search", "value"),
     Input("country-dropdown", "value")
 )
@@ -130,7 +130,7 @@ def update_table(name_search, country_filter):
 @dash.callback(
     Output("download-table", "data"),
     Input("btn-download", "n_clicks"),
-    State("table", "data"),
+    State("workshops-table", "data"),
     prevent_initial_call=True
 )
 def download_filtered_table(n_clicks, table_data):

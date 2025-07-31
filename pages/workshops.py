@@ -27,17 +27,10 @@ print(workshops_country_counts_df.dtypes)
 countries_map_linear = create_country_counts_map(workshops_country_counts_df, scale_type='linear')
 countries_map_log = create_country_counts_map(workshops_country_counts_df, scale_type='log')
 
-
-# Set up page layout
-layout = html.Div([
-    # Page heading 
-    html.H1('These are our Workshops.'),
-    # Page intro text 
-    html.Div("Something about Workshops. This is a list of DC, LC, SWC workshops."),
-    html.Br(),
-
-    # New div - set up search/filter options
-    html.Div([
+# Set up building blocks for page layout 
+header = html.H1('These are our WONDERFUL Workshops.')
+intro_text = html.Div("Something about Workshops. This is a list of DC, LC, SWC workshops.")
+search_filter_options =  html.Div([
         # Inner div for search 
         html.Div([html.Label("Search by Name:"),
                   dcc.Input(id="name-search", type="text", placeholder="Type name...", debounce=True),]),
@@ -50,15 +43,14 @@ layout = html.Div([
                         multi=True,
                         placeholder="Select country..."
                 ),],),
-    
+
         # Download button 
-        html.Button("Download Filtered CSV", id="btn-download"),
+        html.Button("Download the the Filtered CSV", id="btn-download"),
         dcc.Download(id="download-table")
 
-        ], style={"marginBottom": 20, "maxWidth": "400px"}),
+        ], style={"marginBottom": 20, "maxWidth": "400px"})
 
-    # Display table
-    dash_table.DataTable(
+full_table = dash_table.DataTable(
         id="all-workshops-table",
         data=workshops_df.to_dict("records"),
         # Add sort feature to table
@@ -67,12 +59,10 @@ layout = html.Div([
         page_size=20,
         style_cell={'textAlign': 'left'},
         style_table={'overflowX':'scroll'}
+    )
 
-    ),
-
-    # Display table for country counts
-    html.H2('Count Workshops by Country'),
-    dash_table.DataTable(
+country_count_header = html.H2('Count Workshops by Country')
+country_count_table =  dash_table.DataTable(
         id="country-count-table",
         data=workshops_country_counts_df.to_dict("records"),
         columns=[
@@ -81,7 +71,27 @@ layout = html.Div([
         sort_action='native',
         page_size=10,
         fill_width=False
-    ),
+    )
+
+
+
+# Set up page layout
+layout = html.Div([
+    # Page heading 
+    header,
+    # Page intro text 
+    intro_text,
+    html.Br(),
+
+    # New div - set up search/filter options
+    search_filter_options,
+
+    # Display table
+    full_table,
+
+    # Display table for country counts
+    country_count_header,
+    country_count_table,
 
     # Display bar plot for country counts 
     html.H2('Plot workshops by country - Linear Scale'),

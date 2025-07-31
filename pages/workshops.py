@@ -64,6 +64,8 @@ layout = html.Div([
         sort_action='native',
         # Set number of rows to display
         page_size=20,
+        style_table={'overflowX':'scroll'}
+
     ),
 
     # Display table for country counts

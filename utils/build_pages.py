@@ -127,3 +127,27 @@ def create_main_table(df, id, page_size=20):
         style_cell={'textAlign': 'left'},
         style_table={'overflowX':'scroll'}
     )
+
+def set_up_search_filter(df):
+
+    search_filter = html.Div([
+        # Inner div for search 
+        html.Div([html.Label("Search by Name:"),
+                  dcc.Input(id="name-search", type="text", placeholder="Type name...", debounce=True),]),
+
+        # Inner div for country filter 
+        html.Div([html.Label("Filter by Country:"),
+                  dcc.Dropdown(
+                        id="country-dropdown",
+                        options=[{"label": c, "value": c} for c in sorted(df["country"].unique())],
+                        multi=True,
+                        placeholder="Select country..."
+                ),],),
+
+        # Download button 
+        html.Button("Download the the Filtered CSV", id="btn-download"),
+        dcc.Download(id="download-table")
+
+        ], style={"marginBottom": 20, "maxWidth": "400px"})
+    
+    return search_filter

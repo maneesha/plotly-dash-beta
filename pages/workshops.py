@@ -74,6 +74,17 @@ country_count_table =  dash_table.DataTable(
     )
 
 
+linear_plot_header = html.H2('Plot workshops by country - Linear Scale')
+linear_plot = dcc.Graph(figure=chart_linear)
+
+log_plot_header = html.H2('Plot workshops by country - Log Scale')
+log_plot = dcc.Graph(figure=chart_log)
+
+linear_map_header = html.H2('Map workshops by country - Linear Scale')
+linear_map = dcc.Graph(figure=countries_map_linear,  style={'height': '700px', 'width': '100%'} )
+
+log_map_header = html.H2('Map workshops by country - Log Scale')
+log_map = dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width': '100%'} )
 
 # Set up page layout
 layout = html.Div([
@@ -94,18 +105,13 @@ layout = html.Div([
     country_count_table,
 
     # Display bar plot for country counts 
-    html.H2('Plot workshops by country - Linear Scale'),
-    dcc.Graph(figure=chart_linear),
+    linear_plot_header, linear_plot,
     # Display bar plot for country counts 
-    html.H2('Plot workshops by country - Log Scale'),
-    dcc.Graph(figure=chart_log),
+    log_plot_header, log_plot,
 
     # Display map for country counts 
-    html.H2('Map workshops by country - Linear Scale'),
-    dcc.Graph(figure=countries_map_linear,  style={'height': '700px', 'width': '100%'} ),
-
-    html.H2('Map workshops by country - Log Scale'),
-    dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width': '100%'} ),
+    linear_map_header, linear_map,
+    log_map_header, log_map 
 
 ]) # close outer html.Div 
 

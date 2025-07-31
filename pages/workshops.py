@@ -1,9 +1,7 @@
 import dash
 from dash import html, dash_table, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map
 import pandas as pd
-import plotly.graph_objects as go
-import numpy as np
 
 # Initialize page 
 dash.register_page(__name__, title="Workshops")
@@ -18,51 +16,15 @@ workshops_country_counts_df = get_country_counts_df(workshops_df)
 workshops_country_counts_df = add_hover_text(workshops_country_counts_df)
 
 # Create country counts bar charts - linear and log scale 
-chart_linear = create_country_bar_chart(workshops_country   _counts_df, 'linear')
+chart_linear = create_country_bar_chart(workshops_country_counts_df, 'linear')
 chart_log = create_country_bar_chart(workshops_country_counts_df, 'log')
 
+print(workshops_country_counts_df)
 
 # Create country counts map
+countries_map_linear = create_country_counts_map(workshops_country_counts_df, scale_type='linear')
+countries_map_log = create_country_counts_map(workshops_country_counts_df, scale_type='log')
 
-## LINEAR SCALE MAP
-countries_map = go.Figure(data=go.Choropleth(
-    locations = workshops_country_counts_df['country_alpha3'],
-    z = workshops_country_counts_df['count'],
-    colorscale = 'Blues',
-    colorbar = dict(
-        title = 'Value',
-        tickvals = [100, 500, 1000, 1500, 2000],
-        ticktext = [100, 500, 1000, 1500, 2000],),
-    autocolorscale=False, # Do not automatically apply colorscale
-    marker_line_color='darkgray',
-    marker_line_width=0.5,
-    colorbar_title = 'Workshop count',
-    text = workshops_country_counts_df['hover_text'], # custom hover text
-    hovertemplate = '%{text}<extra></extra>',
-))
-countries_map.update_geos(projection_type='natural earth',)
-## END LINEAR SCALE MAP 
-
-
-## LOG SCALE MAP 
-countries_map_log = go.Figure(data=go.Choropleth(
-    locations = workshops_country_counts_df['country_alpha3'],
-    z = workshops_country_counts_df['log_count'],
-    # text = df_log['country_full_name'],
-    colorscale = 'Blues',
-    colorbar = dict(
-        title = 'Value',
-        tickvals = [np.log10(v) for v in [25, 50, 100, 300, 1000, 2000]],
-        ticktext = ['25', '50', '100', '300', '1000', '2000']),
-    autocolorscale=False, # Do not automatically apply colorscale
-    marker_line_color='darkgray',
-    marker_line_width=0.5,
-    colorbar_title = 'Workshop count',
-    text = workshops_country_counts_df['hover_text'], # custom hover text
-    hovertemplate = '%{text}<extra></extra>',
-))
-countries_map_log.update_geos(projection_type='natural earth',)
-## END LOG SCALE MAP 
 
 # Set up page layout
 layout = html.Div([
@@ -122,7 +84,7 @@ layout = html.Div([
 
     # Display map for country counts 
     html.H2('Map workshops by country - Linear Scale'),
-    dcc.Graph(figure=countries_map,  style={'height': '700px', 'width': '100%'} ),
+    dcc.Graph(figure=countries_map_linear,  style={'height': '700px', 'width': '100%'} ),
 
     html.H2('Map workshops by country - Log Scale'),
     dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width': '100%'} ),

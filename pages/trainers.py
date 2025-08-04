@@ -23,6 +23,9 @@ full_table = create_main_table(trainers_df, "trainers-table", 20)
 active_filter =  set_up_search_filter(trainers_df, 'active_status', 'Active Status') 
 country_filter = set_up_search_filter(trainers_df, 'country', 'CounTRY') 
 
+# Set up reset button
+reset_search = html.Button('Clear All Filters', id='clear-filters-button')
+
 # Create country count table display 
 country_count_header = html.H2('Count Trainers by Country')
 country_count_table =  create_country_counts_table(trainers_country_counts_df, 15)
@@ -38,6 +41,7 @@ log_map = dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width'
 layout = html.Div(["hello world", 
                    country_filter, 
                    active_filter, 
+                   reset_search,
                    full_table, 
                    country_count_table, 
                    log_map ])
@@ -58,3 +62,14 @@ def update_table(active_filter, country_filter):
         filtered = filtered[filtered["active_status"].isin(active_filter)]
 
     return filtered.to_dict("records")
+
+
+# Reset filters to display all data 
+@dash.callback(
+    Output('active_status-dropdown', 'value'),
+    Output('country-dropdown', 'value'),
+    Input('clear-filters-button', 'n_clicks'),
+    prevent_initial_call=True
+)
+def clear_filters(n_clicks):
+    return None, None

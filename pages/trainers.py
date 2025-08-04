@@ -29,7 +29,7 @@ country_filter = set_up_search_filter(trainers_df, page_id, 'country', 'Country'
 reset_search = html.Button('Clear All Filters', id='clear-filters-button')
 
 # Set up download data button
-download_button = set_up_download_button()
+download_button = set_up_download_button(page_id)
 
 # Create country count table display 
 country_count_header = html.H2('Count Trainers by Country')
@@ -87,8 +87,8 @@ def clear_filters(n_clicks):
 
 # Downlod current data as csv
 @dash.callback(
-    Output("download-table", "data"),
-    Input("btn-download", "n_clicks"),
+    Output(f"{page_id}-download-table", "data"),
+    Input(f"{page_id}-btn-download", "n_clicks"),
     State(f"{page_id}-table", "data"),
     prevent_initial_call=True
 )

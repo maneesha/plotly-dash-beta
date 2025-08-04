@@ -10,6 +10,7 @@ dash.register_page(__name__, title="Instructor Trainers")
 # Load in instructor trainers data as json and df 
 trainers_json = get_json_from_query_number(775)
 trainers_df = pd.DataFrame(trainers_json)
+trainers_df['country'] = trainers_df['country'].replace('', 'Unknown')
 
 # Create country counts df 
 # Include column for hover text

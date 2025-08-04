@@ -166,3 +166,9 @@ def create_country_counts_table(df, page_size):
     )
 
     return table
+
+def set_up_download_button():
+    button =  html.Button("Download current data!", id="btn-download")
+    download = dcc.Download(id="download-table")
+    return html.Div([button, download])
+

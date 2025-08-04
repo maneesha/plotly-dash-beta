@@ -16,14 +16,18 @@ trainers_df = pd.DataFrame(trainers_json)
 trainers_country_counts_df = get_country_counts_df(trainers_df)
 trainers_country_counts_df = add_hover_text(trainers_country_counts_df)
 
+# Create full table display
 full_table = create_main_table(trainers_df, "trainers-table", 20)
+
+# Set up filters for active status and country
 active_filter =  set_up_search_filter(trainers_df, 'active_status', 'Active Status') 
 country_filter = set_up_search_filter(trainers_df, 'country', 'CounTRY') 
 
+# Create country count table display 
 country_count_header = html.H2('Count Trainers by Country')
 country_count_table =  create_country_counts_table(trainers_country_counts_df, 15)
 
-# Create country counts map
+# Create country counts maps (linear and log scale)
 countries_map_linear = create_country_counts_map(trainers_country_counts_df, scale_type='linear')
 countries_map_log = create_country_counts_map(trainers_country_counts_df, scale_type='log')
 
@@ -38,6 +42,7 @@ layout = html.Div(["hello world",
                    country_count_table, 
                    log_map ])
 
+# Function to activate country and active status filters
 @dash.callback(
     Output("trainers-table", "data"),
     Input("active_status-dropdown", "value"),

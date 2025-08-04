@@ -1,6 +1,6 @@
 import dash
 from dash import html, dash_table, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table 
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table, set_up_download_button
 import pandas as pd
 
 
@@ -27,7 +27,7 @@ country_filter = set_up_search_filter(trainers_df, 'country', 'CounTRY')
 reset_search = html.Button('Clear All Filters', id='clear-filters-button')
 
 # Set up download data button
-download_button = html.Button("Download current data", id="btn-download")
+download_button = set_up_download_button()
 
 # Create country count table display 
 country_count_header = html.H2('Count Trainers by Country')
@@ -44,7 +44,7 @@ log_map = dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width'
 layout = html.Div(["hello world", 
                    country_filter, 
                    active_filter, 
-                   reset_search, download_button, dcc.Download(id="download-table"),
+                   reset_search, download_button,
                    full_table, 
                    country_count_table, 
                    log_map ])

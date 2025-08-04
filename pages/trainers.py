@@ -26,6 +26,9 @@ country_filter = set_up_search_filter(trainers_df, 'country', 'CounTRY')
 # Set up reset button
 reset_search = html.Button('Clear All Filters', id='clear-filters-button')
 
+# Set up download data button
+download_button = html.Button("Download current data", id="btn-download")
+
 # Create country count table display 
 country_count_header = html.H2('Count Trainers by Country')
 country_count_table =  create_country_counts_table(trainers_country_counts_df, 15)
@@ -41,7 +44,7 @@ log_map = dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width'
 layout = html.Div(["hello world", 
                    country_filter, 
                    active_filter, 
-                   reset_search,
+                   reset_search, download_button, dcc.Download(id="download-table"),
                    full_table, 
                    country_count_table, 
                    log_map ])
@@ -73,3 +76,14 @@ def update_table(active_filter, country_filter):
 )
 def clear_filters(n_clicks):
     return None, None
+
+# Downlod current data as csv
+@dash.callback(
+    Output("download-table", "data"),
+    Input("btn-download", "n_clicks"),
+    State("trainers-table", "data"),
+    prevent_initial_call=True
+)
+def download_filtered_table(n_clicks, table_data):
+    filtered_df = pd.DataFrame(table_data)
+    return dcc.send_data_frame(filtered_df.to_csv, filename="carpentries_workshop_data.csv")

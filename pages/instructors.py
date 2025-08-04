@@ -1,38 +1,97 @@
 import dash
-from dash import html, dash_table, dcc 
-from utils.build_pages import get_json_from_query_number,create_country_bar_chart  
+from dash import html, dcc, Input, Output, State 
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table, set_up_download_button
 import pandas as pd
 
+page_id = "instructors"
+
 # Initialize page 
-# dash.register_page(__name__, title="Instructors")
+dash.register_page(__name__, title="Instructors")
 
-# # Load in instructors data as json and df 
-# instructors_json = get_json_from_query_number(776)
-# instructors_df = pd.DataFrame(instructors_json)
+# Load in instructor instructors data as json and df 
+instructors_json = get_json_from_query_number(776)
+instructors_df = pd.DataFrame(instructors_json)
+instructors_df['country'] = instructors_df['country'].replace('', 'Unknown')
 
-# # Create country counts df 
-# instructors_country_counts_df = instructors_df['country'].value_counts().reset_index()
+# Create country counts df 
+# Include column for hover text
+instructors_country_counts_df = get_country_counts_df(instructors_df)
+instructors_country_counts_df = add_hover_text(instructors_country_counts_df)
 
-# # Create country counts bar chart 
-# chart = create_country_bar_chart(instructors_country_counts_df)
+# Create full table display
+full_table = create_main_table(instructors_df, page_id, 20)
 
-# # Set up page layout
-# layout = html.Div([
-#     # Page heading
-#     html.H1('These are our Instructors'),
-#     # Page intro text 
-#     html.Div("Something about Instructors. They teach DC, LC, SWC workshops."),
-#     html.Br(),
-#     # Display table
-#     dash_table.DataTable(
-#         data=instructors_json, 
-#         # Add sort feature to table
-#         sort_action='native',
-#         # Set number of rows to display
-#         page_size=20,
-#     ),
-#     # Display bar plot
-#     html.H2('Plot Instructors by country'),
-#     dcc.Graph(figure=chart)
+# Set up filters for active status and country
+active_filter =  set_up_search_filter(instructors_df, page_id, 'active_status', 'Active Status') 
+country_filter = set_up_search_filter(instructors_df, page_id, 'country', 'Country') 
 
-# ]) # close outer html.Div 
+# Set up reset button
+reset_search = html.Button('Clear All Filters', id='clear-filters-button')
+
+# Set up download data button
+download_button = set_up_download_button(page_id)
+
+# Create country count table display 
+country_count_header = html.H2('Count Trainers by Country')
+country_count_table =  create_country_counts_table(instructors_country_counts_df, 15)
+
+# Create country bar chart
+country_bar_chart = create_country_bar_chart(instructors_country_counts_df, 'log')
+country_bar_chart = dcc.Graph(figure=country_bar_chart, style={'height': '700px', 'width': '100%'})
+
+# Create country counts maps (linear and log scale)
+countries_map_linear = create_country_counts_map(instructors_country_counts_df, scale_type='linear')
+countries_map_log = create_country_counts_map(instructors_country_counts_df, scale_type='log')
+
+log_map_header = html.H2('Map workshops by country - Log Scale')
+log_map = dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width': '100%'} )
+
+# Set up page layout
+layout = html.Div([country_filter, 
+                   active_filter, 
+                   reset_search, download_button,
+                   full_table, 
+                   country_count_table, 
+                   country_bar_chart,
+                   log_map ])
+
+
+# Function to activate country and active status filters
+@dash.callback(
+    Output(f"{page_id}-table", "data"),
+    Input(f"{page_id}-active_status-dropdown", "value"),
+    Input(f"{page_id}-country-dropdown", "value")
+)
+def update_table(active_filter, country_filter):
+    filtered = instructors_df.copy()
+
+    if country_filter:
+        filtered = filtered[filtered["country"].isin(country_filter)]
+
+    if active_filter:
+        filtered = filtered[filtered["active_status"].isin(active_filter)]
+
+    return filtered.to_dict("records")
+
+
+# Reset filters to display all data 
+@dash.callback(
+    Output(f'{page_id}-active_status-dropdown', 'value'),
+    Output(f'{page_id}-country-dropdown', 'value'),
+    Input('clear-filters-button', 'n_clicks'),
+    prevent_initial_call=True
+)
+def clear_filters(n_clicks):
+    return None, None
+
+
+# Downlod current data as csv
+@dash.callback(
+    Output(f"{page_id}-download-table", "data"),
+    Input(f"{page_id}-btn-download", "n_clicks"),
+    State(f"{page_id}-table", "data"),
+    prevent_initial_call=True
+)
+def download_filtered_table(n_clicks, table_data):
+    filtered_df = pd.DataFrame(table_data)
+    return dcc.send_data_frame(filtered_df.to_csv, filename="carpentries_workshop_data.csv")

@@ -1,88 +1,63 @@
 import dash
-from dash import html, dash_table, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table 
+from dash import html, dcc, Input, Output, State 
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table, set_up_download_button
 import pandas as pd
+
+page_id = "workshops"
 
 # Initialize page 
 dash.register_page(__name__, title="Workshops")
 
-# Load in workshops data as json and df 
+# Load in instructor workshops data as json and df 
 workshops_json = get_json_from_query_number(782)
 workshops_df = pd.DataFrame(workshops_json)
-columns = ['host_organization', 'slug', 'start_date', 'end_date', 'venue', 'country',  'url', 'instructors', 'helpers',  'hosts',  'latitude',  'longitude',]
-workshops_df = workshops_df[columns]
+workshops_df['country'] = workshops_df['country'].replace('', 'Unknown')
 
 # Create country counts df 
 # Include column for hover text
 workshops_country_counts_df = get_country_counts_df(workshops_df)
 workshops_country_counts_df = add_hover_text(workshops_country_counts_df)
 
-# Create country counts bar charts - linear and log scale 
-chart_linear = create_country_bar_chart(workshops_country_counts_df, 'linear')
-chart_log = create_country_bar_chart(workshops_country_counts_df, 'log')
+# Create full table display
+full_table = create_main_table(workshops_df, page_id, 20)
 
-print(workshops_country_counts_df.dtypes)
+# Set up filters for country
+country_filter = set_up_search_filter(workshops_df, page_id, 'country', 'Country') 
 
-# Create country counts map
-countries_map_linear = create_country_counts_map(workshops_country_counts_df, scale_type='linear')
-countries_map_log = create_country_counts_map(workshops_country_counts_df, scale_type='log')
+# Set up reset button
+reset_search = html.Button('Clear All Filters', id='clear-filters-button')
 
-# Set up building blocks for page layout 
-header = html.H1('These are our WONDERFUL Workshops.')
-intro_text = html.Div("Something about Workshops. This is a list of DC, LC, SWC workshops.")
-search_filter_options =  set_up_search_filter(workshops_df, 'country', 'Country') 
+# Set up download data button
+download_button = set_up_download_button(page_id)
 
-full_table = create_main_table(workshops_df, "workshops-table", 20)
-
-country_count_header = html.H2('Count Workshops by Country')
+# Create country count table display 
+country_count_header = html.H2('Count Trainers by Country')
 country_count_table =  create_country_counts_table(workshops_country_counts_df, 15)
 
+# Create country bar chart
+country_bar_chart = create_country_bar_chart(workshops_country_counts_df, 'log')
+country_bar_chart = dcc.Graph(figure=country_bar_chart, style={'height': '700px', 'width': '100%'})
 
-linear_plot_header = html.H2('Plot workshops by country - Linear Scale')
-linear_plot = dcc.Graph(figure=chart_linear)
-
-log_plot_header = html.H2('Plot workshops by country - Log Scale')
-log_plot = dcc.Graph(figure=chart_log)
-
-linear_map_header = html.H2('Map workshops by country - Linear Scale')
-linear_map = dcc.Graph(figure=countries_map_linear,  style={'height': '700px', 'width': '100%'} )
+# Create country counts maps (linear and log scale)
+countries_map_linear = create_country_counts_map(workshops_country_counts_df, scale_type='linear')
+countries_map_log = create_country_counts_map(workshops_country_counts_df, scale_type='log')
 
 log_map_header = html.H2('Map workshops by country - Log Scale')
 log_map = dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width': '100%'} )
 
 # Set up page layout
-layout = html.Div([
-    # Page heading 
-    header,
-    # Page intro text 
-    intro_text,
-    html.Br(),
-
-    # New div - set up search/filter options
-    search_filter_options,
-
-    # Display table
-    full_table,
-
-    # Display table for country counts
-    country_count_header,
-    country_count_table,
-
-    # Display bar plot for country counts 
-    linear_plot_header, linear_plot,
-    # Display bar plot for country counts 
-    log_plot_header, log_plot,
-
-    # Display map for country counts 
-    linear_map_header, linear_map,
-    log_map_header, log_map 
-
-]) # close outer html.Div 
+layout = html.Div([country_filter, 
+                   reset_search, download_button,
+                   full_table, 
+                   country_count_table, 
+                   country_bar_chart,
+                   log_map ])
 
 
+# Function to activate country and active status filters
 @dash.callback(
-    Output("workshops-table", "data"),
-    Input("country-dropdown", "value")
+    Output(f"{page_id}-table", "data"),
+    Input(f"{page_id}-country-dropdown", "value")
 )
 def update_table(country_filter):
     filtered = workshops_df.copy()
@@ -93,10 +68,21 @@ def update_table(country_filter):
     return filtered.to_dict("records")
 
 
+# Reset filters to display all data 
 @dash.callback(
-    Output("download-table", "data"),
-    Input("btn-download", "n_clicks"),
-    State("workshops-table", "data"),
+    Output(f'{page_id}-country-dropdown', 'value'),
+    Input('clear-filters-button', 'n_clicks'),
+    prevent_initial_call=True
+)
+def clear_filters(n_clicks):
+    return None, None
+
+
+# Downlod current data as csv
+@dash.callback(
+    Output(f"{page_id}-download-table", "data"),
+    Input(f"{page_id}-btn-download", "n_clicks"),
+    State(f"{page_id}-table", "data"),
     prevent_initial_call=True
 )
 def download_filtered_table(n_clicks, table_data):

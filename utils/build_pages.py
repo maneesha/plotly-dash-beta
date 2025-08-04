@@ -113,10 +113,10 @@ def create_country_counts_map(df, scale_type='linear'):
     return fig
 
 
-def create_main_table(df, id, page_size=20):
+def create_main_table(df, page_id, page_size=20):
 
     return dash_table.DataTable(
-        id=id,
+        id=f"{page_id}-table",
         data=df.to_dict("records"),
         # Add sort feature to table
         sort_action='native',
@@ -127,12 +127,12 @@ def create_main_table(df, id, page_size=20):
     )
 
 
-def set_up_search_filter(df, column_name_df, column_name_human):
+def set_up_search_filter(df, page_id, column_name_df, column_name_human):
 
     search_filter = html.Div([
         html.Div([html.Label(f"Filter by {column_name_human}:"),
                   dcc.Dropdown(
-                        id=f"{column_name_df}-dropdown",
+                        id=f"{page_id}-{column_name_df}-dropdown",
                         options=[{"label": c, "value": c} for c in sorted(df[f"{column_name_df}"].unique())],
                         multi=True,
                         placeholder=f"Select {column_name_human}..."

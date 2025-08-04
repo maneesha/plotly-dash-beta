@@ -3,9 +3,7 @@ import plotly.graph_objects as go
 import os
 import pycountry
 import numpy as np
-import dash 
-from dash import html, dash_table, dcc, Input, Output, State 
-
+from dash import html, dash_table, dcc
 
 
 def get_json_from_query_number(query_number):
@@ -128,14 +126,10 @@ def create_main_table(df, id, page_size=20):
         style_table={'overflowX':'scroll'}
     )
 
+
 def set_up_search_filter(df, column_name_df, column_name_human):
 
     search_filter = html.Div([
-        # # Inner div for search 
-        # html.Div([html.Label("Search by Name:"),
-        #           dcc.Input(id="name-search", type="text", placeholder="Type name...", debounce=True),]),
-
-        # Inner div for country filter 
         html.Div([html.Label(f"Filter by {column_name_human}:"),
                   dcc.Dropdown(
                         id=f"{column_name_df}-dropdown",
@@ -143,10 +137,6 @@ def set_up_search_filter(df, column_name_df, column_name_human):
                         multi=True,
                         placeholder=f"Select {column_name_human}..."
                 ),],),
-
-        # Download button 
-        # html.Button("Download the the Filtered CSV", id="btn-download"),
-        # dcc.Download(id="download-table")
 
         ], style={"marginBottom": 20, "maxWidth": "400px"})
     
@@ -167,8 +157,9 @@ def create_country_counts_table(df, page_size):
 
     return table
 
+
 def set_up_download_button():
-    button =  html.Button("Download current data!", id="btn-download")
+    button =  html.Button("Download current data", id="btn-download")
     download = dcc.Download(id="download-table")
     return html.Div([button, download])
 

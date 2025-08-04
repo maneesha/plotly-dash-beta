@@ -1,5 +1,5 @@
 import dash
-from dash import html, dash_table, dcc, Input, Output, State 
+from dash import html, dcc, Input, Output, State 
 from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table, set_up_download_button
 import pandas as pd
 
@@ -21,7 +21,7 @@ full_table = create_main_table(trainers_df, "trainers-table", 20)
 
 # Set up filters for active status and country
 active_filter =  set_up_search_filter(trainers_df, 'active_status', 'Active Status') 
-country_filter = set_up_search_filter(trainers_df, 'country', 'CounTRY') 
+country_filter = set_up_search_filter(trainers_df, 'country', 'Country') 
 
 # Set up reset button
 reset_search = html.Button('Clear All Filters', id='clear-filters-button')
@@ -41,13 +41,13 @@ log_map_header = html.H2('Map workshops by country - Log Scale')
 log_map = dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width': '100%'} )
 
 # Set up page layout
-layout = html.Div(["hello world", 
-                   country_filter, 
+layout = html.Div([country_filter, 
                    active_filter, 
                    reset_search, download_button,
                    full_table, 
                    country_count_table, 
                    log_map ])
+
 
 # Function to activate country and active status filters
 @dash.callback(
@@ -76,6 +76,7 @@ def update_table(active_filter, country_filter):
 )
 def clear_filters(n_clicks):
     return None, None
+
 
 # Downlod current data as csv
 @dash.callback(

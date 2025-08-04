@@ -33,6 +33,10 @@ download_button = set_up_download_button()
 country_count_header = html.H2('Count Trainers by Country')
 country_count_table =  create_country_counts_table(trainers_country_counts_df, 15)
 
+# Create country bar chart
+country_bar_chart = create_country_bar_chart(trainers_country_counts_df, 'log')
+country_bar_chart = dcc.Graph(figure=country_bar_chart, style={'height': '700px', 'width': '100%'})
+
 # Create country counts maps (linear and log scale)
 countries_map_linear = create_country_counts_map(trainers_country_counts_df, scale_type='linear')
 countries_map_log = create_country_counts_map(trainers_country_counts_df, scale_type='log')
@@ -46,6 +50,7 @@ layout = html.Div([country_filter,
                    reset_search, download_button,
                    full_table, 
                    country_count_table, 
+                   country_bar_chart,
                    log_map ])
 
 

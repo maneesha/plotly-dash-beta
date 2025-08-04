@@ -145,8 +145,8 @@ def set_up_search_filter(df, column_name_df, column_name_human):
                 ),],),
 
         # Download button 
-        html.Button("Download the the Filtered CSV", id="btn-download"),
-        dcc.Download(id="download-table")
+        # html.Button("Download the the Filtered CSV", id="btn-download"),
+        # dcc.Download(id="download-table")
 
         ], style={"marginBottom": 20, "maxWidth": "400px"})
     

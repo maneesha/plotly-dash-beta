@@ -8,6 +8,8 @@ page_id = "workshops"
 # Initialize page 
 dash.register_page(__name__, title="Workshops")
 
+page_header = html.H2("Workshops")
+
 # Load in instructor workshops data as json and df 
 workshops_json = get_json_from_query_number(782)
 workshops_df = pd.DataFrame(workshops_json)
@@ -46,7 +48,8 @@ log_map_header = html.H2('Map workshops by country - Log Scale')
 log_map = dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width': '100%'} )
 
 # Set up page layout
-layout = html.Div([country_filter, 
+layout = html.Div([page_header,
+                   country_filter, 
                    reset_search, download_button,
                    full_table, 
                    country_count_table, 

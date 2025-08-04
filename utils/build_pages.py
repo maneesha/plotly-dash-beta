@@ -108,7 +108,8 @@ def create_country_counts_map(df, scale_type='linear'):
         hovertemplate='%{text}<extra></extra>',
     ))
 
-    fig.update_geos(projection_type='natural earth', landcolor="LightGray",)
+    fig.update_geos(projection_type='natural earth', landcolor="LightGray", showcountries=True,)
+    fig.update_layout(title=f'Count by Country ({scale_type} scale)',)
 
     return fig
 

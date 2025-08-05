@@ -166,4 +166,7 @@ def set_up_download_button(page_id):
     download = dcc.Download(id=f"{page_id}-download-table")
     return html.Div([button, download])
 
+def set_up_clear_filters_button(page_id):
+    button = dbc.Button("Clear All Filters", id=f"{page_id}-clear-filters-button")
+    return button
 

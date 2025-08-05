@@ -9,6 +9,13 @@ import dash_bootstrap_components as dbc
 
 
 def get_json_from_query_number(query_number):
+    """
+    Takes one argument: Redash query number as int 
+    Returns the data as a list of dicts.
+
+    Requires the env variable REDASH_KEY_QUERY{query_number} to be set.
+    """
+
     redash_api_key = os.getenv(f"REDASH_KEY_QUERY{query_number}")
     redash_data_url = f"http://redash.carpentries.org/api/queries/{query_number}/results.json?api_key={redash_api_key}"
 
@@ -20,8 +27,9 @@ def get_json_from_query_number(query_number):
 
 def create_country_bar_chart(df, scale_type):
     """
-    Create bar chart from dataframe containing country counts.
-    Allows for different scale types (linear or log).
+    Takes two arguments: dataframe and scale type ('linear' or 'log').
+
+    Returns a Plotly bar chart figure.
     """
 
     # Intialize figure 
@@ -53,39 +61,54 @@ def create_country_bar_chart(df, scale_type):
     return fig 
 
 
-# Function to get full country name from alpha-2 code
 def get_country_name(code):
+    """
+    Takes one argument: alpha-2 country code as string.
+    Returns the full country name as a string.
+    """
+    
     try:
         return pycountry.countries.get(alpha_2=code).name
     except:
         return "Country unknown"
 
 
-# Function to get alpha-3 code from alpha-2 code
 def get_country_alpha3(code):
+    """
+    Takes one argument: alpha-2 country code as string.
+    Returns the alpha-3 country code as a string.
+    """
     try:
         return pycountry.countries.get(alpha_2=code).alpha_3
     except:
         return "Country unknown"
 
 
-# Function to create country counts dataframe 
 def get_country_counts_df(df):
+    """
+    Takes one argument: dataframe with a 'country' column containing the two character country code.
+    Returns a dataframe with country counts, full name and alpha-3 code.
+    """
     country_counts_df = df['country'].value_counts().reset_index()
     country_counts_df['country_full_name'] = country_counts_df['country'].apply(get_country_name)
     country_counts_df['country_alpha3'] = country_counts_df['country'].apply(get_country_alpha3)
     return country_counts_df
 
 
-# Function to add hover text to a dataframe
 def add_hover_text(df):
+    """
+    Takes one argument: dataframe with 'country_full_name' and 'count' columns.
+    Returns the dataframe with 'hover_text' column added.
+    """
+
     df['hover_text'] = df['country_full_name'] + '<br>Value: ' + df['count'].astype(str)
     return df
 
 
 def create_country_counts_map(df, scale_type='linear'):
     """
-    Create a choropleth map of country counts.
+    Takes two arguments: dataframe with country_alpha3, count, and hover_text columns, and scale type ('linear' or 'log').
+    Returns a Plotly choropleth map figure.
     """
 
     if scale_type == 'linear':
@@ -117,6 +140,10 @@ def create_country_counts_map(df, scale_type='linear'):
 
 
 def create_main_table(df, page_id, page_size=20):
+    """
+    Takes three arguments: dataframe, page_id, and page_size
+    Returns a Dash DataTable based on the dataframe.
+    """
 
     return dash_table.DataTable(
         id=f"{page_id}-table",
@@ -131,6 +158,10 @@ def create_main_table(df, page_id, page_size=20):
 
 
 def set_up_search_filter(df, page_id, column_name_df, column_name_human):
+    """
+    Takes four arguments: dataframe, page_id, column name in dataframe, and human-readable column name.
+    Returns a Dash HTML Div dropdown to filter by the specified column.
+    """
 
     search_filter = html.Div([
         html.Div([html.Label(f"Filter by {column_name_human}:"),
@@ -147,6 +178,11 @@ def set_up_search_filter(df, page_id, column_name_df, column_name_human):
 
 
 def create_country_counts_table(df, page_size):
+    """
+    Takes two arguments: dataframe with 'country_full_name' and 'count' columns, and page size.
+    Returns a Dash DataTable displaying country counts.
+    """
+
     table = dash_table.DataTable(
         id="country-count-table",
         data=df.to_dict("records"),
@@ -162,11 +198,21 @@ def create_country_counts_table(df, page_size):
 
 
 def set_up_download_button(page_id):
-    button =  dbc.Button("Download current data", id=f"{page_id}-btn-download")
+    """
+    Takes one argument: page_id.
+    Returns a Dash HTML Div button and Dash component to download the current data 
+    """
+
+    button = dbc.Button("Download current data", id=f"{page_id}-btn-download")
     download = dcc.Download(id=f"{page_id}-download-table")
     return html.Div([button, download])
 
+
 def set_up_clear_filters_button(page_id):
+    """
+    Takes one argument: page_id.
+    Returns a Dash HTML Div button and Dash component to clear all filters. 
+    """
+
     button = dbc.Button("Clear All Filters", id=f"{page_id}-clear-filters-button")
     return button
-

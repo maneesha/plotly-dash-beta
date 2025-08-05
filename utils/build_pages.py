@@ -4,6 +4,8 @@ import os
 import pycountry
 import numpy as np
 from dash import html, dash_table, dcc
+import dash_bootstrap_components as dbc
+
 
 
 def get_json_from_query_number(query_number):
@@ -160,7 +162,8 @@ def create_country_counts_table(df, page_size):
 
 
 def set_up_download_button(page_id):
-    button =  html.Button("Download current data", id=f"{page_id}-btn-download")
+    button =  dbc.Button("Download current data", id=f"{page_id}-btn-download")
     download = dcc.Download(id=f"{page_id}-download-table")
     return html.Div([button, download])
+
 

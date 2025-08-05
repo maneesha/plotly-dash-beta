@@ -1,6 +1,6 @@
 import dash
 from dash import html, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table, set_up_download_button
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table, set_up_download_button, set_up_clear_filters_button 
 import pandas as pd
 
 page_id = "instructors"
@@ -30,7 +30,7 @@ country_filter = set_up_search_filter(instructors_df, page_id, 'country', 'Count
 continent_filter = set_up_search_filter(instructors_df, page_id, 'continent', 'Continent')
 
 # Set up reset button
-reset_search = html.Button('Clear All Filters', id='clear-filters-button')
+reset_search = set_up_clear_filters_button(page_id)
 
 # Set up download data button
 download_button = set_up_download_button(page_id)
@@ -54,7 +54,6 @@ log_map = dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width'
 layout = html.Div([page_header,
                    country_filter, 
                    continent_filter,
-                   active_filter, 
                    reset_search, download_button,
                    full_table, 
                    country_count_table, 
@@ -65,18 +64,14 @@ layout = html.Div([page_header,
 # Function to activate country and active status filters
 @dash.callback(
     Output(f"{page_id}-table", "data"),
-    Input(f"{page_id}-active_status-dropdown", "value"),
     Input(f"{page_id}-country-dropdown", "value"),
     Input(f"{page_id}-continent-dropdown", "value")
 )
-def update_table(active_filter, country_filter, continent_filter):
+def update_table(country_filter, continent_filter):
     filtered = instructors_df.copy()
 
     if country_filter:
         filtered = filtered[filtered["country"].isin(country_filter)]
-
-    if active_filter:
-        filtered = filtered[filtered["active_status"].isin(active_filter)]
 
     if continent_filter:
         filtered = filtered[filtered["continent"].isin(continent_filter)]
@@ -86,9 +81,9 @@ def update_table(active_filter, country_filter, continent_filter):
 
 # Reset filters to display all data 
 @dash.callback(
-    Output(f'{page_id}-active_status-dropdown', 'value'),
     Output(f'{page_id}-country-dropdown', 'value'),
-    Input('clear-filters-button', 'n_clicks'),
+    Output(f'{page_id}-continent-dropdown', 'value'),
+    Input(f'{page_id}-clear-filters-button', 'n_clicks'),
     prevent_initial_call=True
 )
 def clear_filters(n_clicks):

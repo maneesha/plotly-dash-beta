@@ -1,6 +1,6 @@
 import dash
 from dash import html, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table, set_up_download_button
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table, set_up_download_button, set_up_clear_filters_button 
 import pandas as pd
 
 page_id = "trainers"
@@ -28,7 +28,7 @@ active_filter =  set_up_search_filter(trainers_df, page_id, 'active_status', 'Ac
 country_filter = set_up_search_filter(trainers_df, page_id, 'country', 'Country') 
 
 # Set up reset button
-reset_search = html.Button('Clear All Filters', id='clear-filters-button')
+reset_search = set_up_clear_filters_button(page_id)
 
 # Set up download data button
 download_button = set_up_download_button(page_id)
@@ -81,7 +81,7 @@ def update_table(active_filter, country_filter):
 @dash.callback(
     Output(f'{page_id}-active_status-dropdown', 'value'),
     Output(f'{page_id}-country-dropdown', 'value'),
-    Input('clear-filters-button', 'n_clicks'),
+    Input(f'{page_id}-clear-filters-button', 'n_clicks'),
     prevent_initial_call=True
 )
 def clear_filters(n_clicks):

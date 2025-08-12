@@ -84,15 +84,18 @@ def get_country_alpha3(code):
         return "Country unknown"
 
 
-def get_country_counts_df(df):
+def get_aggregate_counts_df(df, count_by):
     """
-    Takes one argument: dataframe with a 'country' column containing the two character country code.
-    Returns a dataframe with country counts, full name and alpha-3 code.
+    Takes two arguments: dataframe and column name to count by.
+    Returns a dataframe with counts of unique values in the given column.
+
+    If count_by is 'country', it also adds columns for  'country_full_name' and 'country_alpha3'
     """
-    country_counts_df = df['country'].value_counts().reset_index()
-    country_counts_df['country_full_name'] = country_counts_df['country'].apply(get_country_name)
-    country_counts_df['country_alpha3'] = country_counts_df['country'].apply(get_country_alpha3)
-    return country_counts_df
+    counts_df = df[count_by].value_counts().reset_index()
+    if count_by == 'country':
+        counts_df['country_full_name'] = counts_df['country'].apply(get_country_name)
+        counts_df['country_alpha3'] = counts_df['country'].apply(get_country_alpha3)
+    return counts_df
 
 
 def add_hover_text(df):
@@ -188,6 +191,26 @@ def create_country_counts_table(df, page_size):
         data=df.to_dict("records"),
         columns=[
             {'name':"country_full_name", 'id':"country_full_name"}, {'name':"count", 'id':"count"}
+            ],
+        sort_action='native',
+        page_size=page_size,
+        fill_width=False
+    )
+
+    return table
+
+
+def aggregate_count_table(df, count_by, page_size=10):
+    """
+    Takes three arguments: dataframe, column name to count by, and page size.
+    Returns a Dash DataTable with aggregate counts by the given column.
+    """
+
+    table = dash_table.DataTable(
+        id=f"{count_by}-table",
+        data=df.to_dict("records"),
+        columns=[
+            {'name':count_by, 'id':count_by}, {'name':"count", 'id':"count"}
             ],
         sort_action='native',
         page_size=page_size,

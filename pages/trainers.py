@@ -45,6 +45,10 @@ country_count_table =  aggregate_count_table(trainers_country_counts_df, 'countr
 continent_count_header = html.H2('Count Instructor Trainers by Continent')
 continent_count_table = aggregate_count_table(continent_counts_df, 'continent', 15)
 
+# Create continent bar chart
+continent_bar_chart = create_bar_chart(continent_counts_df, 'continent', 'linear')
+continent_bar_chart = dcc.Graph(figure=continent_bar_chart, style={'height': '700px', 'width': '100%'})
+
 
 # Create country bar chart
 country_bar_chart = create_bar_chart(trainers_country_counts_df, 'country_full_name','log')
@@ -67,7 +71,8 @@ layout = html.Div([page_header,
                    country_bar_chart,
                    continent_count_header,
                    continent_count_table,
-                   log_map ])
+                   continent_bar_chart,
+                   log_map])
 
 
 # Function to activate country and active status filters

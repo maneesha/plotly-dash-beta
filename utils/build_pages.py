@@ -25,7 +25,7 @@ def get_json_from_query_number(query_number):
     return data 
 
 
-def create_country_bar_chart(df, scale_type):
+def create_bar_chart(df, count_by, scale_type):
     """
     Takes two arguments: dataframe and scale type ('linear' or 'log').
 
@@ -36,10 +36,10 @@ def create_country_bar_chart(df, scale_type):
     fig = go.Figure()
 
     # Add bar chart trace
-    fig.add_trace(go.Bar(x=df['country'],
+    fig.add_trace(go.Bar(x=df[count_by],
                          y=df['count'],
                          text=df['count'],
-                         customdata=df[['country_full_name']],
+                         customdata=df[[count_by]],
                          hovertemplate="<b>%{customdata[0]}</b>: %{text}<extra></extra>"))
 
     # Set y-ticks based on scale type 
@@ -56,7 +56,7 @@ def create_country_bar_chart(df, scale_type):
             tickvals= tick_vals,  # Specify tick values
             # ticktext=[]  List of equivalent length 
         ),
-        title=f'Count by Country ({scale_type} scale)',)
+        title=f'Count by {count_by} ({scale_type} scale)',)
 
     return fig 
 

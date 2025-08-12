@@ -1,6 +1,6 @@
 import dash
 from dash import html, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table, set_up_download_button, set_up_clear_filters_button 
+from utils.build_pages import get_json_from_query_number, create_bar_chart,  get_aggregate_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, set_up_download_button, set_up_clear_filters_button, aggregate_count_table   
 import pandas as pd
 
 page_id = "trainers"
@@ -17,7 +17,7 @@ trainers_df['country'] = trainers_df['country'].replace('', 'Unknown')
 
 # Create country counts df 
 # Include column for hover text
-trainers_country_counts_df = get_country_counts_df(trainers_df)
+trainers_country_counts_df = get_aggregate_counts_df(trainers_df, 'country')
 trainers_country_counts_df = add_hover_text(trainers_country_counts_df)
 
 # Create full table display
@@ -35,10 +35,10 @@ download_button = set_up_download_button(page_id)
 
 # Create country count table display 
 country_count_header = html.H2('Count Trainers by Country')
-country_count_table =  create_country_counts_table(trainers_country_counts_df, 15)
+country_count_table =  aggregate_count_table(trainers_country_counts_df, 'country',15)
 
 # Create country bar chart
-country_bar_chart = create_country_bar_chart(trainers_country_counts_df, 'log')
+country_bar_chart = create_bar_chart(trainers_country_counts_df, 'country_full_name','log')
 country_bar_chart = dcc.Graph(figure=country_bar_chart, style={'height': '700px', 'width': '100%'})
 
 # Create country counts maps (linear and log scale)

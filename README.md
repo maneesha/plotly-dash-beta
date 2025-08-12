@@ -8,6 +8,8 @@ The app builds similar pages for Carpentries workshops, Instructors, and Instruc
 
 Each page includes a table of all data we have consent to share and counts of individuals or events displayed as a table, a bar plot, and a choropleth map. Data can be filtered by country, continent, or active status (for individuals).  The full or filtered data set can be downloaded as csv.
 
+Source data comes from Redash and depends on secret API keys stored as environment variables.
+
 ## Next steps/to-do
 
 * Currently the aggregate data (country counts) uses the same source data as the full data table.  The aggregate data can include individuals/events without consent.

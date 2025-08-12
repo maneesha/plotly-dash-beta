@@ -39,8 +39,11 @@ reset_search = set_up_clear_filters_button(page_id)
 download_button = set_up_download_button(page_id)
 
 # Create country count table display 
-country_count_header = html.H2('Count Trainers by Country')
+country_count_header = html.H2('Count Instructors by Country')
 country_count_table =  aggregate_count_table(instructors_country_counts_df, 'country', 15)
+
+# Create continent count table display 
+continent_count_header = html.H2('Count Instructors by Continent')
 continent_count_table = aggregate_count_table(continent_counts_df, 'continent', 15)
 
 # Create country bar chart
@@ -66,9 +69,11 @@ layout = html.Div([page_header,
                    continent_filter,
                    reset_search, download_button,
                    full_table, 
+                   country_count_header,
                    country_count_table, 
-                   continent_count_table,
                    country_bar_chart,
+                   continent_count_header,
+                   continent_count_table,
                    continent_bar_chart,
                    log_map ])
 

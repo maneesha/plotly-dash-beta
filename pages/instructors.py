@@ -1,6 +1,6 @@
 import dash
 from dash import html, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_bar_chart,  get_aggregate_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table, set_up_download_button, set_up_clear_filters_button, aggregate_count_table   
+from utils.build_pages import get_json_from_query_number, create_bar_chart,  get_aggregate_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, set_up_download_button, set_up_clear_filters_button, aggregate_count_table   
 import pandas as pd
 
 page_id = "instructors"

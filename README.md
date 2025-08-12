@@ -8,7 +8,13 @@ The app builds similar pages for Carpentries workshops, Instructors, and Instruc
 
 Each page includes a table of all data we have consent to share and counts of individuals or events displayed as a table, a bar plot, and a choropleth map. Data can be filtered by country, continent, or active status (for individuals).  The full or filtered data set can be downloaded as csv.
 
-Source data comes from Redash and depends on secret API keys stored as environment variables.
+## Run dashboard locally
+
+Source data comes from Redash and depends on secret API keys stored as environment variables.  Ensure you have API keys saved with the name format following `f"REDASH_KEY_QUERY{query_number}"`.
+
+Install dependent packages from `requirements.txt`.
+
+Run `python app.py` and go to http://127.0.0.1:8050/.
 
 ## Next steps/to-do
 

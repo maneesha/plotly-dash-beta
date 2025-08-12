@@ -179,27 +179,6 @@ def set_up_search_filter(df, page_id, column_name_df, column_name_human):
     
     return search_filter
 
-
-def create_country_counts_table(df, page_size):
-    """
-    Takes two arguments: dataframe with 'country_full_name' and 'count' columns, and page size.
-    Returns a Dash DataTable displaying country counts.
-    """
-
-    table = dash_table.DataTable(
-        id="country-count-table",
-        data=df.to_dict("records"),
-        columns=[
-            {'name':"country_full_name", 'id':"country_full_name"}, {'name':"count", 'id':"count"}
-            ],
-        sort_action='native',
-        page_size=page_size,
-        fill_width=False
-    )
-
-    return table
-
-
 def aggregate_count_table(df, count_by, page_size=10):
     """
     Takes three arguments: dataframe, column name to count by, and page size.

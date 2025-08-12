@@ -30,6 +30,7 @@ full_table = create_main_table(trainers_df, page_id, 20)
 # Set up filters for active status and country
 active_filter =  set_up_search_filter(trainers_df, page_id, 'active_status', 'Active Status') 
 country_filter = set_up_search_filter(trainers_df, page_id, 'country', 'Country') 
+continent_filter = set_up_search_filter(trainers_df, page_id, 'continent', 'Continent')
 
 # Set up reset button
 reset_search = set_up_clear_filters_button(page_id)
@@ -64,6 +65,7 @@ log_map = dcc.Graph(figure=countries_map_log,  style={'height': '700px', 'width'
 # Set up page layout
 layout = html.Div([page_header,
                    country_filter, 
+                   continent_filter,
                    active_filter, 
                    reset_search, download_button,
                    full_table, 
@@ -79,9 +81,10 @@ layout = html.Div([page_header,
 @dash.callback(
     Output(f"{page_id}-table", "data"),
     Input(f"{page_id}-active_status-dropdown", "value"),
-    Input(f"{page_id}-country-dropdown", "value")
+    Input(f"{page_id}-country-dropdown", "value"),
+    Input(f"{page_id}-continent-dropdown", "value")
 )
-def update_table(active_filter, country_filter):
+def update_table(active_filter, country_filter, continent_filter):
     filtered = trainers_df.copy()
 
     if country_filter:
@@ -89,6 +92,9 @@ def update_table(active_filter, country_filter):
 
     if active_filter:
         filtered = filtered[filtered["active_status"].isin(active_filter)]
+
+    if continent_filter:
+        filtered = filtered[filtered["continent"].isin(continent_filter)]
 
     return filtered.to_dict("records")
 
@@ -114,3 +120,7 @@ def clear_filters(n_clicks):
 def download_filtered_table(n_clicks, table_data):
     filtered_df = pd.DataFrame(table_data)
     return dcc.send_data_frame(filtered_df.to_csv, filename="carpentries_workshop_data.csv")
+
+
+
+

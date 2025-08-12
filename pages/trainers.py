@@ -14,11 +14,15 @@ page_header = html.H2("Instructor Trainers")
 trainers_json = get_json_from_query_number(775)
 trainers_df = pd.DataFrame(trainers_json)
 trainers_df['country'] = trainers_df['country'].replace('', 'Unknown')
+trainers_df['continent'] = trainers_df['continent'].fillna('Unknown')
 
 # Create country counts df 
 # Include column for hover text
 trainers_country_counts_df = get_aggregate_counts_df(trainers_df, 'country')
 trainers_country_counts_df = add_hover_text(trainers_country_counts_df)
+
+# Create continent counts df 
+continent_counts_df = get_aggregate_counts_df(trainers_df, 'continent')
 
 # Create full table display
 full_table = create_main_table(trainers_df, page_id, 20)
@@ -36,6 +40,11 @@ download_button = set_up_download_button(page_id)
 # Create country count table display 
 country_count_header = html.H2('Count Trainers by Country')
 country_count_table =  aggregate_count_table(trainers_country_counts_df, 'country',15)
+
+# Create continent count table display 
+continent_count_header = html.H2('Count Instructor Trainers by Continent')
+continent_count_table = aggregate_count_table(continent_counts_df, 'continent', 15)
+
 
 # Create country bar chart
 country_bar_chart = create_bar_chart(trainers_country_counts_df, 'country_full_name','log')
@@ -56,6 +65,8 @@ layout = html.Div([page_header,
                    full_table, 
                    country_count_table, 
                    country_bar_chart,
+                   continent_count_header,
+                   continent_count_table,
                    log_map ])
 
 

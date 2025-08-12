@@ -1,6 +1,6 @@
 import dash
 from dash import html, dcc, Input, Output, State 
-from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_country_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table, set_up_download_button, set_up_clear_filters_button 
+from utils.build_pages import get_json_from_query_number, create_country_bar_chart,  get_aggregate_counts_df, add_hover_text, create_country_counts_map, create_main_table, set_up_search_filter, create_country_counts_table, set_up_download_button, set_up_clear_filters_button, aggregate_count_table   
 import pandas as pd
 
 page_id = "instructors"
@@ -18,8 +18,11 @@ instructors_df['continent'] = instructors_df['continent'].fillna('Unknown')
 
 # Create country counts df 
 # Include column for hover text
-instructors_country_counts_df = get_country_counts_df(instructors_df)
+instructors_country_counts_df = get_aggregate_counts_df(instructors_df, 'country')
 instructors_country_counts_df = add_hover_text(instructors_country_counts_df)
+
+# Create continent counts df 
+continent_counts_df = get_aggregate_counts_df(instructors_df, 'continent')
 
 # Create full table display
 full_table = create_main_table(instructors_df, page_id, 20)
@@ -37,7 +40,8 @@ download_button = set_up_download_button(page_id)
 
 # Create country count table display 
 country_count_header = html.H2('Count Trainers by Country')
-country_count_table =  create_country_counts_table(instructors_country_counts_df, 15)
+country_count_table =  aggregate_count_table(instructors_country_counts_df, 'country', 15)
+continent_count_table = aggregate_count_table(continent_counts_df, 'continent', 15)
 
 # Create country bar chart
 country_bar_chart = create_country_bar_chart(instructors_country_counts_df, 'log')
@@ -57,6 +61,7 @@ layout = html.Div([page_header,
                    reset_search, download_button,
                    full_table, 
                    country_count_table, 
+                   continent_count_table,
                    country_bar_chart,
                    log_map ])
 

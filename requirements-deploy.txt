@@ -1,0 +1,4 @@
+# import the base requirements
+-r requirements.txt
+
+gunicorn

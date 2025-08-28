@@ -4,6 +4,8 @@ import dash_bootstrap_components as dbc
 
 app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
+server = app.server
+
 app.layout = html.Div([
     html.H1('The Carpentries Dashboards'),
     html.Div([
